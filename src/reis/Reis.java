@@ -2,9 +2,12 @@ package reis;
 
 import persoon.personeel.Steward;
 import persoon.personeel.TreinBestuurder;
+import ticket.Ticket;
 import trein.Trein;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,6 +23,7 @@ public class Reis {
     private final LocalDateTime vertrekTijdstip;
     private final Set<TreinBestuurder> bestuurders;
     private final Set<Steward> stewards;
+    private final List<Ticket> verkochteTickets;
 
     public Reis(String vertrekStation, String eindStation, LocalDateTime vertrekTijdstip, Set<TreinBestuurder> bestuurders, Set<Steward> stewards) {
         if (bestuurders.isEmpty()) {
@@ -33,6 +37,7 @@ public class Reis {
         this.vertrekTijdstip = vertrekTijdstip;
         this.bestuurders = bestuurders;
         this.stewards = stewards;
+        this.verkochteTickets = new ArrayList<>();
     }
 
     public String getVertrekStation() {
@@ -66,5 +71,18 @@ public class Reis {
      */
     public void voegTreinToe(Trein trein) {
         this.trein = trein;
+    }
+
+    /**
+     * Een methode om een ticket toe te voegen aan een reis
+     *
+     * @param ticket Het ticket dat je wil toevoegen
+     * @throws IllegalArgumentException wanneer het maximum aantal tickets al verkocht is
+     */
+    public void voegTicketToe(Ticket ticket) {
+        if (this.verkochteTickets.size() == this.trein.getLocomotief().getLocomotiefType().getCapaciteit()) {
+            throw new IllegalArgumentException("Deze trein is volgeboekt");
+        }
+        this.verkochteTickets.add(ticket);
     }
 }

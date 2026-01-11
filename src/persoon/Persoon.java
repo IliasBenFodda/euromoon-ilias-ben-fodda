@@ -2,6 +2,12 @@ package persoon;
 
 import java.time.LocalDate;
 
+/**
+ * Persoon is een class die gebruikt wordt om personen in de Euromoon applicatie voor te stellen
+ *
+ * @author Ilias Ben-Fodda
+ *
+ */
 public abstract class Persoon {
     private final String naam;
     private final String achternaam;

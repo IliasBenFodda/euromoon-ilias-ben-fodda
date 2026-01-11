@@ -6,6 +6,12 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Personeelslid is een class die gebruikt wordt om personeelsleden in de Euromoon applicatie voor te stellen
+ *
+ * @author Ilias Ben-Fodda
+ *
+ */
 public class Personeelslid extends Persoon {
     private final Set<Certificatie> certificaties;
 
@@ -18,6 +24,11 @@ public class Personeelslid extends Persoon {
         return certificaties;
     }
 
+    /**
+     * Een methode om een certificatie toe te voegen aan een personeelslid
+     *
+     * @param certificatie De certificatie die je wil toevoegen
+     */
     public void voegCertificatieToe(Certificatie certificatie) {
         certificaties.add(certificatie);
     }

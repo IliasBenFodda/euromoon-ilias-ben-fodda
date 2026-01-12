@@ -2,7 +2,6 @@ import persoon.passagier.Passagier;
 import persoon.personeel.*;
 import trein.locomotief.Locomotief;
 import trein.locomotief.LocomotiefType;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;

@@ -1,4 +1,5 @@
 import persoon.passagier.Passagier;
+import persoon.personeel.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,6 +11,7 @@ import java.util.Set;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final Set<Passagier> passagiers = new HashSet<>();
+    private static final Set<Personeelslid> personeelsleden = new HashSet<>();
 
     public static void main(String[] args) {
         boolean status = true;
@@ -19,9 +21,42 @@ public class Main {
             scanner.nextLine();
             switch (keuze) {
                 case 1 -> registreerPassagier();
+                case 2 -> registreerPersoneelslid();
                 case 10 -> status = false;
             }
         }
+    }
+
+    private static void registreerPersoneelslid() {
+        System.out.println("Naam: ");
+        String naam = scanner.nextLine();
+        System.out.println("Achternaam: ");
+        String achternaam = scanner.nextLine();
+        System.out.println("Rijkregisternummer: ");
+        String rijkregisternummer = scanner.nextLine();
+        LocalDate geboortedatum = formatGeboortedatum(scanner);
+
+        while (true) {
+            System.out.println("Kies een functie: Bagage, Conducteur, Steward, Bestuurder");
+            String functie = scanner.nextLine();
+            try {
+                Personeelslid personeelslid = maakPersoneelslid(functie, naam, achternaam, rijkregisternummer, geboortedatum);
+                personeelsleden.add(personeelslid);
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Onbekende functie, probeer opnieuw");
+            }
+        }
+    }
+
+    private static Personeelslid maakPersoneelslid(String functie, String naam, String achternaam, String rijkregisternummer, LocalDate geboortedatum) {
+        return switch (functie.toLowerCase()) {
+            case "bagage" -> new BagageMedewerker(naam, achternaam, rijkregisternummer, geboortedatum);
+            case "conducteur" -> new Conducteur(naam, achternaam, rijkregisternummer, geboortedatum);
+            case "steward" -> new Steward(naam, achternaam, rijkregisternummer, geboortedatum);
+            case "bestuurder" -> new TreinBestuurder(naam, achternaam, rijkregisternummer, geboortedatum);
+            default -> throw new IllegalArgumentException("Onbekende functie: " + functie.toLowerCase());
+        };
     }
 
     private static void registreerPassagier() {

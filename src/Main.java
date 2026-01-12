@@ -16,14 +16,27 @@ public class Main {
     public static void main(String[] args) {
         boolean status = true;
         while (status) {
-            getWelkomMenu();
-            int keuze = scanner.nextInt();
+            int keuze = leesKeuze();
             scanner.nextLine();
             switch (keuze) {
                 case 1 -> registreerPassagier();
                 case 2 -> registreerPersoneelslid();
                 case 10 -> status = false;
             }
+        }
+    }
+
+    private static int leesKeuze() {
+        while (true) {
+            getWelkomMenu();
+            if (!scanner.hasNextInt()) {
+                System.out.println("Ongeldige invoer, probeer opnieuw");
+                scanner.nextLine();
+                continue;
+            }
+            int keuze = scanner.nextInt();
+            scanner.nextLine();
+            return keuze;
         }
     }
 

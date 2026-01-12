@@ -1,5 +1,7 @@
 import persoon.passagier.Passagier;
 import persoon.personeel.*;
+import trein.locomotief.Locomotief;
+import trein.locomotief.LocomotiefType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,11 +19,30 @@ public class Main {
         boolean status = true;
         while (status) {
             int keuze = leesKeuze();
-            scanner.nextLine();
             switch (keuze) {
                 case 1 -> registreerPassagier();
                 case 2 -> registreerPersoneelslid();
+                case 3 -> maakTrein();
                 case 10 -> status = false;
+            }
+        }
+    }
+
+    private static void maakTrein() {
+        Locomotief locomotief = kiesLocomotief();
+    }
+
+    private static Locomotief kiesLocomotief() {
+        while (true) {
+            System.out.print("Kies een locomotief type (373 of 374): ");
+            String type = scanner.nextLine();
+
+            if (type.equals("373")) {
+                return new Locomotief(LocomotiefType.CLASS_373);
+            } else if (type.equals("374")) {
+                return new Locomotief(LocomotiefType.CLASS_374);
+            } else {
+                System.out.println("Ongeldige keuze");
             }
         }
     }
@@ -55,6 +76,7 @@ public class Main {
             try {
                 Personeelslid personeelslid = maakPersoneelslid(functie, naam, achternaam, rijkregisternummer, geboortedatum);
                 personeelsleden.add(personeelslid);
+                System.out.println("Successvol geregistreerd");
                 break;
             } catch (IllegalArgumentException e) {
                 System.out.println("Onbekende functie, probeer opnieuw");
@@ -82,6 +104,7 @@ public class Main {
         LocalDate geboortedatum = formatGeboortedatum(scanner);
         Passagier passagier = new Passagier(naam, achternaam, rijkregisternummer, geboortedatum);
         passagiers.add(passagier);
+        System.out.println("Successvol geregistreerd");
     }
 
     private static LocalDate formatGeboortedatum(Scanner scanner) {
@@ -101,5 +124,7 @@ public class Main {
         System.out.println("Welkom bij de Euromoon applicatie");
         System.out.println("Via het onderstaande menu kan je kiezen wat je wil doen:");
         System.out.println("1. Registreer een passagier");
+        System.out.println("2. Registreer een personeelslid");
+        System.out.println("3. Maak een trein");
     }
 }

@@ -9,6 +9,8 @@ import trein.wagon.Wagon;
 import trein.wagon.WagonKlasse;
 
 import javax.swing.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +39,35 @@ public class Main {
                 case 6 -> drukBoardingLijstAf();
                 case 7 -> status = false;
             }
+        }
+    }
+
+    private static void drukBoardingLijstAf() {
+        System.out.println("Kies voor welke reis je de boarding lijst wil afdrukken:");
+        for (int i = 0; i < reizen.size(); i++) {
+            System.out.println((i + 1) + ". Reis van " + reizen.get(i).getVertrekStation() + " naar " + reizen.get(i).getEindStation() + " op " + reizen.get(i).getVertrekTijdstip().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
+        }
+        int reisKeuze;
+        while (true) {
+            reisKeuze = vraagGetal("Voer het nummer van de gekozen reis in:");
+            if (reisKeuze >= 1 && reisKeuze <= reizen.size()) {
+                break;
+            }
+            System.out.println("Ongeldige keuze, probeer opnieuw.");
+        }
+        Reis gekozenReis = reizen.get(reisKeuze - 1);
+
+        String bestandsnaam = gekozenReis.getVertrekStation() + "_" + gekozenReis.getEindStation() + "_" + gekozenReis.getVertrekTijdstip().format(DateTimeFormatter.ofPattern("ddMMyyyy_HHmm")) + ".txt";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(bestandsnaam))) {
+            for (Ticket ticket : gekozenReis.getVerkochteTickets()) {
+                Passagier passagier = ticket.getTicketHouder();
+                writer.write("Naam: " + passagier.getNaam() + " " + passagier.getAchternaam() + ", Rijkregisternummer: " + passagier.getRijkregisternummer() + ", Geboortedatum: " + passagier.getGeboortedatum().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                writer.newLine();
+            }
+            writer.flush();
+            System.out.println("Boarding lijst geprint, het bestand zal verschijnen wanneer je dit programma afsluit of naar een andere tab gaat");
+        } catch (Exception e) {
+            System.out.println("Fout bij printen");
         }
     }
 

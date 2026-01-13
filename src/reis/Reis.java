@@ -64,6 +64,10 @@ public class Reis {
         return bestuurders;
     }
 
+    public List<Ticket> getVerkochteTickets() {
+        return verkochteTickets;
+    }
+
     /**
      * Een methode om een trein toe te voegen aan een reis
      *

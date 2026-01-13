@@ -16,11 +16,6 @@ public class Trein {
     private final Locomotief locomotief;
     private final List<Wagon> wagons;
 
-    public Trein(Locomotief locomotief) {
-        this.locomotief = locomotief;
-        this.wagons = new ArrayList<>();
-    }
-
     public Trein(Locomotief locomotief, List<Wagon> wagons) {
         if (wagons.size() > locomotief.getLocomotiefType().getMaximumAantalWagons()) {
             throw new IllegalArgumentException("Het aantal wagons is meer dan toegestaan, maximium aantal is: " + locomotief.getLocomotiefType().getMaximumAantalWagons());

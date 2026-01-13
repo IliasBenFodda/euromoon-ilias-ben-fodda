@@ -1,18 +1,22 @@
 import persoon.passagier.Passagier;
 import persoon.personeel.*;
+import trein.Trein;
 import trein.locomotief.Locomotief;
 import trein.locomotief.LocomotiefType;
+import trein.wagon.Wagon;
+import trein.wagon.WagonKlasse;
+
+import javax.swing.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final Set<Passagier> passagiers = new HashSet<>();
     private static final Set<Personeelslid> personeelsleden = new HashSet<>();
+    private static final List<Trein> treinen = new ArrayList<>();
 
     public static void main(String[] args) {
         boolean status = true;
@@ -29,6 +33,47 @@ public class Main {
 
     private static void maakTrein() {
         Locomotief locomotief = kiesLocomotief();
+        int maximumAantalWagons = locomotief.getLocomotiefType().getMaximumAantalWagons();
+        List<Wagon> wagons = maakWagons(maximumAantalWagons);
+        Trein trein = new Trein(locomotief, wagons);
+        treinen.add(trein);
+        System.out.println("Aanmaken trein was succesvol");
+    }
+
+    private static List<Wagon> maakWagons(int maximumAantalWagons) {
+        while (true) {
+            System.out.println("Maximum aantal wagons: " + maximumAantalWagons);
+            int eersteKlasseWagons = vraagGetal("Kies het aantal eerste klasse wagons");
+            int tweedeKlasseWagons = vraagGetal("Kies het aantal tweede klasse wagons");
+            if (eersteKlasseWagons + tweedeKlasseWagons <= maximumAantalWagons) {
+                List<Wagon> wagons = new ArrayList<>();
+                for (int i = 0; i < eersteKlasseWagons; i++) {
+                    wagons.add(new Wagon(WagonKlasse.EERSTE_KLASSE));
+                }
+                for (int i = 0; i < tweedeKlasseWagons; i++) {
+                    wagons.add(new Wagon(WagonKlasse.TWEEDE_KLASSE));
+                }
+                return wagons;
+            }
+            System.out.println("Je hebt te veel wagons gekozen, probeer opnieuw (maximum: " + maximumAantalWagons + ")");
+        }
+    }
+
+    private static int vraagGetal(String boodschap) {
+        while (true) {
+            System.out.println(boodschap);
+            if (scanner.hasNextInt()) {
+                int value = scanner.nextInt();
+                scanner.nextLine();
+                if (value >= 0) {
+                    return value;
+                }
+                System.out.println("Geef een positief getal");
+            } else {
+                System.out.println("Ongeldige, geef een getal");
+                scanner.nextLine();
+            }
+        }
     }
 
     private static Locomotief kiesLocomotief() {

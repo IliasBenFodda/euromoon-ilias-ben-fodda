@@ -1,6 +1,7 @@
 import persoon.passagier.Passagier;
 import persoon.personeel.*;
 import reis.Reis;
+import ticket.Ticket;
 import trein.Trein;
 import trein.locomotief.Locomotief;
 import trein.locomotief.LocomotiefType;
@@ -19,7 +20,8 @@ public class Main {
     private static final Set<Passagier> passagiers = new HashSet<>();
     private static final Set<Personeelslid> personeelsleden = new HashSet<>();
     private static final List<Trein> treinen = new ArrayList<>();
-    private static final Set<Reis> reizen = new HashSet<>();
+    private static final List<Ticket> tickets = new ArrayList<>();
+    private static final List<Reis> reizen = new ArrayList<>();
 
     public static void main(String[] args) {
         boolean status = true;
@@ -31,7 +33,9 @@ public class Main {
                 case 2 -> registreerPersoneelslid();
                 case 3 -> maakTrein();
                 case 4 -> maakReis();
-                case 10 -> status = false;
+                case 5 -> verkoopTicketAanPassagier();
+                case 6 -> drukBoardingLijstAf();
+                case 7 -> status = false;
             }
         }
     }
@@ -45,6 +49,68 @@ public class Main {
         personeelsleden.add(new Conducteur("Tom", "Willems", "67890123456", LocalDate.of(1988, 6, 6)));
         passagiers.add(new Passagier("Ilias", "Ben-Fodda", "78901234567", LocalDate.of(1995, 7, 7)));
         passagiers.add(new Passagier("Sara", "Janssens", "89012345678", LocalDate.of(1993, 8, 8)));
+    }
+
+    private static void verkoopTicketAanPassagier() {
+        System.out.println("Kies een passagier om een ticket aan te verkopen (kies naam):");
+        for (Passagier passagier : passagiers) {
+            System.out.println(passagier.getNaam());
+        }
+        String gekozenNaam = scanner.nextLine();
+        Passagier gekozenPassagier = null;
+        for (Passagier passagier : passagiers) {
+            if (passagier.getNaam().equalsIgnoreCase(gekozenNaam)) {
+                gekozenPassagier = passagier;
+                break;
+            }
+        }
+        if (gekozenPassagier == null) {
+            System.out.println("Passagier niet gevonden");
+            return;
+        }
+        if (reizen.isEmpty()) {
+            System.out.println("Er zijn geen reizen beschikbaar om een ticket voor te verkopen.");
+            return;
+        }
+        System.out.println("Kies een reis om een ticket voor te verkopen:");
+        for (int i = 0; i < reizen.size(); i++) {
+            System.out.println((i + 1) + ". Reis van " + reizen.get(i).getVertrekStation() + " naar " + reizen.get(i).getEindStation() + " op " + reizen.get(i).getVertrekTijdstip().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
+        }
+        int reisKeuze;
+        while (true) {
+            reisKeuze = vraagGetal("Voer het nummer van de gekozen reis in:");
+            if (reizen.get(reisKeuze - 1) != null) {
+                break;
+            }
+            System.out.println("Ongeldige keuze, probeer opnieuw.");
+        }
+        Reis gekozenReis = reizen.get(reisKeuze - 1);
+        System.out.println("Kies de wagon klasse voor het ticket (eerste of tweede):");
+        String wagonklasse;
+        while (true) {
+            wagonklasse = scanner.nextLine();
+            if (wagonklasse.equalsIgnoreCase("eerste")) {
+                try {
+                    Ticket ticket = new Ticket(gekozenPassagier, gekozenReis, WagonKlasse.EERSTE_KLASSE);
+                    tickets.add(ticket);
+                    System.out.println("Ticket verkocht");
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+            } else if (wagonklasse.equalsIgnoreCase("tweede")) {
+                try {
+                    Ticket ticket = new Ticket(gekozenPassagier, gekozenReis, WagonKlasse.TWEEDE_KLASSE);
+                    tickets.add(ticket);
+                    System.out.println("Ticket verkocht");
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+            } else {
+                System.out.println("Ongeldige, probeer opnieuw (eerste of tweede):");
+            }
+        }
     }
 
     private static void maakReis() {
@@ -258,5 +324,8 @@ public class Main {
         System.out.println("2. Registreer een personeelslid");
         System.out.println("3. Maak een trein");
         System.out.println("4. Maak een reis");
+        System.out.println("5. Verkoop ticket aan passagier");
+        System.out.println("6. Druk boardinglijst af");
+        System.out.println("7. Afsluiten");
     }
 }

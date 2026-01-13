@@ -1,5 +1,6 @@
 import persoon.passagier.Passagier;
 import persoon.personeel.*;
+import reis.Reis;
 import trein.Trein;
 import trein.locomotief.Locomotief;
 import trein.locomotief.LocomotiefType;
@@ -8,6 +9,7 @@ import trein.wagon.WagonKlasse;
 
 import javax.swing.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -17,18 +19,103 @@ public class Main {
     private static final Set<Passagier> passagiers = new HashSet<>();
     private static final Set<Personeelslid> personeelsleden = new HashSet<>();
     private static final List<Trein> treinen = new ArrayList<>();
+    private static final Set<Reis> reizen = new HashSet<>();
 
     public static void main(String[] args) {
         boolean status = true;
+        maakBestaandeData();
         while (status) {
             int keuze = leesKeuze();
             switch (keuze) {
                 case 1 -> registreerPassagier();
                 case 2 -> registreerPersoneelslid();
                 case 3 -> maakTrein();
+                case 4 -> maakReis();
                 case 10 -> status = false;
             }
         }
+    }
+
+    private static void maakBestaandeData() {
+        personeelsleden.add(new TreinBestuurder("Jan", "Janssens", "12345678901", LocalDate.of(1980, 1, 1)));
+        personeelsleden.add(new Steward("Piet", "Pieters", "23456789012", LocalDate.of(1990, 2, 2)));
+        personeelsleden.add(new Steward("Klaas", "Klaassen", "34567890123", LocalDate.of(1985, 3, 3)));
+        personeelsleden.add(new Steward("Marie", "De Vries", "45678901234", LocalDate.of(1992, 4, 4)));
+        personeelsleden.add(new BagageMedewerker("Els", "Peeters", "56789012345", LocalDate.of(1975, 5, 5)));
+        personeelsleden.add(new Conducteur("Tom", "Willems", "67890123456", LocalDate.of(1988, 6, 6)));
+        passagiers.add(new Passagier("Ilias", "Ben-Fodda", "78901234567", LocalDate.of(1995, 7, 7)));
+        passagiers.add(new Passagier("Sara", "Janssens", "89012345678", LocalDate.of(1993, 8, 8)));
+    }
+
+    private static void maakReis() {
+        System.out.println("Geef het vertrekstation: ");
+        String vertrekStation = scanner.nextLine();
+        System.out.println("Geef het eindstation: ");
+        String eindStation = scanner.nextLine();
+
+        LocalDateTime vertrekTijdstip;
+        while (true) {
+            try {
+                System.out.println("Geef het vertrek tijdstip (dd-MM-yyyy HH:mm): ");
+                String vertrekTijdstipInput = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                vertrekTijdstip = LocalDateTime.parse(vertrekTijdstipInput, formatter);
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Ongeldig formaat voor vertrek tijdstip, gebruik dd-MM-yyyy HH:mm");
+            }
+        }
+        Set<TreinBestuurder> bestuurders = new HashSet<>();
+        System.out.println("Kies 1 of meerdere bestuurders");
+        for (Personeelslid personeelslid : personeelsleden) {
+            if (personeelslid instanceof TreinBestuurder) {
+                System.out.println("Wil je " + personeelslid.getNaam() + " " + personeelslid.getAchternaam() + " toevoegen als bestuurder? (ja/nee)");
+                String antwoord = scanner.nextLine();
+                if (antwoord.equalsIgnoreCase("ja")) {
+                    bestuurders.add((TreinBestuurder) personeelslid);
+                }
+            }
+        }
+        if (bestuurders.isEmpty()) {
+            System.out.println("Er moet ten minste 1 bestuurder zijn om een reis te maken.");
+            return;
+        }
+        Set<Steward> stewards = new HashSet<>();
+        System.out.println("Kies 3 of meerdere stewards");
+        for (Personeelslid personeelslid : personeelsleden) {
+            if (personeelslid instanceof Steward) {
+                System.out.println("Wil je " + personeelslid.getNaam() + " " + personeelslid.getAchternaam() + " toevoegen als steward? (ja/nee)");
+                String antwoord = scanner.nextLine();
+                if (antwoord.equalsIgnoreCase("ja")) {
+                    stewards.add((Steward) personeelslid);
+                }
+            }
+        }
+        if (stewards.size() < 3) {
+            System.out.println("Er moeten ten minste 3 stewards zijn om een reis te maken.");
+            return;
+        }
+        Reis reis = new Reis(vertrekStation, eindStation, vertrekTijdstip, bestuurders, stewards);
+        if (treinen.isEmpty()) {
+            System.out.println("Er zijn geen treinen beschikbaar om aan de reis toe te voegen.");
+            return;
+        }
+        System.out.println("Kies een trein om aan de reis toe te voegen:");
+        for (int i = 0; i < treinen.size(); i++) {
+            System.out.println((i + 1) + ". Trein met locomotief " + treinen.get(i).getLocomotief().getLocomotiefType());
+        }
+        int treinKeuze;
+        while (true) {
+            treinKeuze = vraagGetal("Voer het nummer van de gekozen trein in:");
+            if (treinKeuze >= 1 && treinKeuze <= treinen.size()) {
+                break;
+            }
+            System.out.println("Ongeldige keuze, probeer opnieuw.");
+        }
+        Trein gekozenTrein = treinen.get(treinKeuze - 1);
+        reis.voegTreinToe(gekozenTrein);
+        reizen.add(reis);
+        System.out.println("Reis succesvol aangemaakt");
     }
 
     private static void maakTrein() {
@@ -170,5 +257,6 @@ public class Main {
         System.out.println("1. Registreer een passagier");
         System.out.println("2. Registreer een personeelslid");
         System.out.println("3. Maak een trein");
+        System.out.println("4. Maak een reis");
     }
 }

@@ -110,7 +110,7 @@ public class Main {
         int reisKeuze;
         while (true) {
             reisKeuze = vraagGetal("Voer het nummer van de gekozen reis in:");
-            if (reizen.get(reisKeuze - 1) != null) {
+            if (reisKeuze >= 1 && reisKeuze <= reizen.size()) {
                 break;
             }
             System.out.println("Ongeldige keuze, probeer opnieuw.");
